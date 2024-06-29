@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="mx-auto max-w-[700px] my-8">
+
+        <div class="border rounded bg-white mb-5">
+            <img src="{{ asset('images/illustation.jpeg') }}" alt="" class="rounded-t max-h-[200px] w-[100%] object-cover">
+
+            <h1 class="text-3xl font-bold  p-7">
+                École Les Fontanilles
+            </h1>
+
+            <h2 class="text-gray-700  p-7 pt-3">
+                Bienvenue sur le site de l'école Les Fontanilles
+            </h2>
+        </div>
+
+        <div class="border rounded p-5 bg-white">
+            Bienvenue sur notre plateforme de prise de rendez-vous en ligne pour les parents et les enseignants.
+            <br>
+            <br>
+            Sélectionnez la date et l'heure qui vous conviennent le mieux pour discuter des progrès de votre enfant,
+            poser des questions ou aborder toute autre préoccupation.
+            <br>
+            Nous nous engageons à collaborer étroitement avec
+            vous pour assurer la réussite de votre enfant.
+            <br><br>
+            Nous avons hâte de vous rencontrer !
+
+        </div>
+
+
+
+
+        <div class="grid grid-cols-4 gap-4 auto-rows-fr my-7">
+            {% for teacher in teachers %}
+                <a href="" class="border rounded grayscale hover:grayscale-0 ">
+                    <img src="{{ asset(teacher.picture) }}" alt="" class="rounded-t">
+                    <div class="p-3">
+                        {{ teacher.name }}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+{% endblock %}
