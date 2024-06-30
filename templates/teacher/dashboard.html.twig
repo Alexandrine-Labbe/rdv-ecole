@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if app.user %}
+        <a href="{{ path('app_logout') }}" class="underline pe-3 float-end">Déconnexion</a>
+    {% endif %}
+
+
+    teacher_dashboard
+{% endblock %}

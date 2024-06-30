@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    {% if app.user %}
+            <a href="{{ path('app_logout') }}" class="underline pe-3 float-end">Déconnexion</a>
+    {% endif %}
+
     <div class="mx-auto max-w-[700px] my-8">
 
         <div class="border rounded bg-white mb-5">
@@ -35,10 +39,14 @@
         <div class="grid grid-cols-4 gap-4 auto-rows-fr my-7">
             {% for teacher in teachers %}
                 <a href="" class="border rounded grayscale hover:grayscale-0 ">
-                    <img src="{{ asset(teacher.picture) }}" alt="" class="rounded-t">
+                    <img src="{{ asset(teacher.avatar) }}" alt="" class="rounded-t">
                     <div class="p-3">
-                        {{ teacher.name }}
+                        {{ teacher.firstName }} {{ teacher.lastName }}
+                        <div class="text-gray-600 text-sm">
+                            {{ teacher.grade }}
+                        </div>
                     </div>
+
                 </a>
             {% endfor %}
         </div>
