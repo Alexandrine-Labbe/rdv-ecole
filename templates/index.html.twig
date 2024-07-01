@@ -2,10 +2,10 @@
 
 {% block body %}
     {% if app.user %}
-            <a href="{{ path('app_logout') }}" class="underline pe-3 float-end">Déconnexion</a>
+            <a href="{{ path('app_logout') }}" class="underline p-3 float-end">Déconnexion</a>
     {% endif %}
 
-    <div class="mx-auto max-w-[700px] my-8">
+    <div class="container">
 
         <div class="border rounded bg-white mb-5">
             <img src="{{ asset('images/illustation.jpeg') }}" alt="" class="rounded-t max-h-[200px] w-[100%] object-cover">
@@ -36,7 +36,7 @@
 
 
 
-        <div class="grid grid-cols-4 gap-4 auto-rows-fr my-7">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr my-7">
             {% for teacher in teachers %}
                 <a href="" class="border rounded grayscale hover:grayscale-0 ">
                     <img src="{{ asset(teacher.avatar) }}" alt="" class="rounded-t">
