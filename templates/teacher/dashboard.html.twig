@@ -8,8 +8,13 @@
     {% endif %}
 
     <div class="container">
-        <div class="text-center">
-            <img src="{{ asset(app.user.avatar) }}" alt="" class="rounded-full max-w-28 inline-block shadow-md">
+        <div class="text-center mb-8">
+
+            <div class="avatar">
+                <div class="mask mask-hexagon w-36">
+                    <img src="{{ asset(app.user.avatar) }}"/>
+                </div>
+            </div>
 
             <h1 class="font-bold text-3xl">
                 Bonjour {{ app.user.firstName }} {{ app.user.lastName }} !
@@ -17,27 +22,48 @@
         </div>
 
 
-        <div class="border rounded p-6 bg-white my-4">
+        <h2 class="text-2xl">
+            Mes Rendez-vous
+        </h2>
 
-            <h2 class="text-2xl">
-                Mes créneaux
-            </h2>
+        <div>
+            {% for appointment in appointments %}
 
-            <div>
-                {% for appointment in appointments %}
-                    <div class="rounded {{ appointment.is_available ? 'border border-amber-400 text-amber-400' :  'bg-amber-400 text-white' }} my-3 py-5 px-4">
-                        <p class="font-bold mb-3">
+
+                <div class="card bg-base-100 border {{ appointment.is_available ? '' :  'border-primary' }}  card-compact shadow-lg my-3">
+                    <div class="card-body">
+                        <h2 class="card-title">
                             {{ appointment.datetime|date('H:i') }} le {{ appointment.datetime|date('d/m/Y') }}
-                        </p>
-                        <p class="font-semibold">
-                            {{ appointment.is_available ? 'Disponible' :  appointment.student }}
-                        </p>
-                    </div>
-                {% endfor %}
-            </div>
+                        </h2>
 
+                        {% if appointment.is_available %}
+                            <p>
+                                Créneau disponible
+                            </p>
+                        {% else %}
+                            <p>
+                                Enfant : {{ appointment.student }}
+                            </p>
+                            <p>
+                                Parent(s) : {{ appointment.parents | join(', ') }}
+                            </p>
+                        {% endif %}
+
+
+                        <div class="card-actions justify-end">
+                            {% if appointment.is_available %}
+                                <button class="btn btn-outline btn-sm btn-primary">Supprimer le créneau</button>
+                            {% else %}
+                                <button class="btn btn-sm btn-primary">Annuler le rdv</button>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+
     </div>
 
-    
+
 {% endblock %}

@@ -20,21 +20,26 @@
         </div>
 
         <form method="post">
-            <div class="border rounded bg-white w-[40dvw]">
 
-                <img src="{{ asset('images/illustation.jpeg') }}" alt="" class="rounded-t max-h-[150px] w-[100%] object-cover">
+            <div class="card bg-base-100 w-96 shadow-xl">
+                <figure>
+                    <img
+                            src="{{ asset('images/illustation.jpeg') }}"
+                            alt="Teacher"/>
+                </figure>
+                <div class="card-body items-center text-center">
+                    <h2 class="card-title">Connexion</h2>
 
-                <div class="p-5">
-                    <h3 class="mb-3 font-bold text-center">Connexion</h3>
                     <div class="mt-3">
-                        <label for="username" class="block font-semibold mb-2">Email</label>
-                        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control"
+                        <label for="username" class="block font-semibold mb-2 text-start">Email</label>
+                        <input type="email" value="{{ last_username }}" name="_username" id="username"
+                               class="input input-bordered w-full max-w"
                                autocomplete="email" required autofocus>
                     </div>
 
                     <div class="mt-3">
-                        <label for="password" class="block font-semibold mb-2">Password</label>
-                        <input type="password" name="_password" id="password" class="form-control"
+                        <label for="password" class="block font-semibold mb-2 text-start">Password</label>
+                        <input type="password" name="_password" id="password" class="input input-bordered w-full max-w"
                                autocomplete="current-password" required>
                     </div>
 
@@ -42,11 +47,10 @@
                            value="{{ csrf_token('authenticate') }}"
                     >
 
-                    <button class="btn-primary block mx-auto mt-4" type="submit">
+                    <button class="btn btn-primary mx-auto " type="submit">
                         Connexion
                     </button>
                 </div>
-
             </div>
 
         </form>

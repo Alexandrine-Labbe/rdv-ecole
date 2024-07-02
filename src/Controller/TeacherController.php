@@ -17,7 +17,6 @@ class TeacherController extends AbstractController
                 'student' => 'Alice Johnson',
                 'parents' => [
                     'Emma Johnson',
-                    'Robert Johnson',
                 ],
                 'is_available' => false,
             ],
@@ -50,7 +49,6 @@ class TeacherController extends AbstractController
                 'datetime' => '2024-07-02T11:00:00+00:00',
                 'student' => 'Ethan Davis',
                 'parents' => [
-                    'Grace Davis',
                     'Henry Davis',
                 ],
                 'is_available' => false,
@@ -85,7 +83,6 @@ class TeacherController extends AbstractController
                 'student' => 'Ian Walker',
                 'parents' => [
                     'Mia Walker',
-                    'Elijah Walker',
                 ],
                 'is_available' => false,
             ],
@@ -100,7 +97,6 @@ class TeacherController extends AbstractController
                 'datetime' => '2024-07-04T11:00:00+00:00',
                 'student' => 'Katie Wilson',
                 'parents' => [
-                    'Samantha Wilson',
                     'Mason Wilson',
                 ],
                 'is_available' => false,
