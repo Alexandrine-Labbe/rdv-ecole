@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TeacherRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -42,6 +44,20 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $is_available_for_appointment = false;
+
+    /**
+     * @var Collection<int, Appointment>
+     */
+    #[ORM\OneToMany(targetEntity: Appointment::class, mappedBy: 'teacher', orphanRemoval: true)]
+    private Collection $appointments;
+
+    public function __construct()
+    {
+        $this->appointments = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -162,6 +178,48 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatar(?string $avatar): static
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function isAvailableForAppointment(): ?bool
+    {
+        return $this->is_available_for_appointment;
+    }
+
+    public function setAvailableForAppointment(bool $is_available_for_appointment): static
+    {
+        $this->is_available_for_appointment = $is_available_for_appointment;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Appointment>
+     */
+    public function getAppointments(): Collection
+    {
+        return $this->appointments;
+    }
+
+    public function addAppointment(Appointment $appointment): static
+    {
+        if (!$this->appointments->contains($appointment)) {
+            $this->appointments->add($appointment);
+            $appointment->setTeacher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointment(Appointment $appointment): static
+    {
+        if ($this->appointments->removeElement($appointment)) {
+            // set the owning side to null (unless already changed)
+            if ($appointment->getTeacher() === $this) {
+                $appointment->setTeacher(null);
+            }
+        }
 
         return $this;
     }
