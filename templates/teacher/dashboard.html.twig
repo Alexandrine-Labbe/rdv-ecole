@@ -1,69 +1,35 @@
-{% extends 'base.html.twig' %}
+{% extends 'teacher/_base.html.twig' %}
 
-{% block title %}Mes rendez-vous{% endblock %}
+{% block page_title %}
+    Tableau de bord
+{% endblock %}
 
-{% block body %}
-    {% if app.user %}
-        <a href="{{ path('app_logout') }}" class="underline p-3 float-end">Déconnexion</a>
-    {% endif %}
+{% block content %}
+    <div class="grid grid-cols-3 gap-4 mt-8">
 
-    <div class="container">
-        <div class="text-center mb-8">
+        <a href="{{ path('teacher_appointments') }}" class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Mes rendez-vous
+                </h2>
 
-            <div class="avatar">
-                <div class="mask mask-hexagon w-36">
-                    <img src="{{ asset(app.user.avatar) }}"/>
-                </div>
             </div>
+        </a>
+        <a href="{{ path('teacher_students') }}" class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Mes élèves
+                </h2>
 
-            <h1 class="font-bold text-3xl">
-                Bonjour {{ app.user.firstName }} {{ app.user.lastName }} !
-            </h1>
-        </div>
+            </div>
+        </a>
+        <a href="{{ path('teacher_appointments') }}" class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Mon compte
+                </h2>
 
-
-        <h2 class="text-2xl">
-            Mes Rendez-vous
-        </h2>
-
-        <div>
-            {% for appointment in appointments %}
-
-
-                <div class="card bg-base-100 border {{ appointment.isAvailable ? '' :  'border-primary' }}  card-compact shadow-lg my-3">
-                    <div class="card-body">
-                        <h2 class="card-title">
-                            {{ appointment.beginAt |date('H:i') }} le {{ appointment.beginAt|date('d/m/Y') }}
-                        </h2>
-
-                        {% if appointment.isAvailable %}
-                            <p>
-                                Créneau disponible
-                            </p>
-                        {% else %}
-                            <p>
-                                Enfant : {{ appointment.student }}
-                            </p>
-                            <p>
-                                Parent(s) : {{ appointment.parents | join(', ') }}
-                            </p>
-                        {% endif %}
-
-
-                        <div class="card-actions justify-end">
-                            {% if appointment.isAvailable %}
-                                <button class="btn btn-outline btn-sm btn-primary">Supprimer le créneau</button>
-                            {% else %}
-                                <button class="btn btn-sm btn-primary">Annuler le rdv</button>
-                            {% endif %}
-                        </div>
-
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
+            </div>
+        </a>
     </div>
-
-
 {% endblock %}
