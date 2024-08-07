@@ -1,0 +1,24 @@
+{% use 'tailwind_2_layout.html.twig' %}
+
+{%- block checkbox_row -%}
+    {%- set row_attr = row_attr|merge({ class: row_attr.class|default(row_class|default('mb-6')) }) -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+
+    <div class="form-control" {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        <label class="label cursor-pointer justify-start">
+            {{- form_widget(form, widget_attr) -}}
+            <span class="label-text">{{- form_label(form) -}}</span>
+        </label>
+        {{- form_errors(form) -}}
+        {{- form_help(form) -}}
+    </div>
+
+{%- endblock checkbox_row -%}
+
+{%- block checkbox_widget -%}
+    {%- set widget_class = widget_class|default('checkbox me-4') -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}

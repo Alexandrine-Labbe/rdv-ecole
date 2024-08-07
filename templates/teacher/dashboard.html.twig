@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="grid grid-cols-3 gap-4 mt-8">
+    <div class="grid grid-cols-2 gap-4 mt-8">
 
         <a href="{{ path('teacher_appointments') }}" class="card bg-base-100 shadow-xl">
             <div class="card-body">
@@ -15,6 +15,16 @@
 
             </div>
         </a>
+
+        <a href="" class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Mes crénaux
+                </h2>
+
+            </div>
+        </a>
+
         <a href="{{ path('teacher_students') }}" class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <h2 class="card-title">
@@ -23,7 +33,7 @@
 
             </div>
         </a>
-        <a href="{{ path('teacher_appointments') }}" class="card bg-base-100 shadow-xl">
+        <a href="{{ path('teacher_account') }}" class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <h2 class="card-title">
                     Mon compte

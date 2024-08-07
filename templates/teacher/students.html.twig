@@ -5,5 +5,43 @@
 {% endblock %}
 
 {% block content %}
-   TODO
+    {% for child in students %}
+        <div class="card bg-base-100 card-compact shadow-lg my-3">
+            <div class="card-body">
+                <h2 class="card-title">
+                    {{ child.lastName | upper }} {{ child.firstName }}
+                </h2>
+
+
+                <div class="overflow-x-auto">
+
+
+                    {% for appointment in child.appointments %}
+
+                        <div>
+                            Rendez-vous : {{ appointment.beginAt |date('H:i') }} le {{ appointment.beginAt|date('d/m/Y') }}
+                        </div>
+
+                        {% for parent in appointment.guardians %}
+                            <div>
+                                Parent : {{ parent.firstName }} {{ parent.lastName }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                </div>
+
+
+                {#                {% for appointment in child.appointments %} #}
+                {#                    Rendez-vous : {{ appointment.beginAt |date('H:i') }} le {{ appointment.beginAt|date('d/m/Y') }} #}
+
+                {#                    {% for parent in appointment.guardians %} #}
+
+                {#                        Parent : {{ parent.firstName }} {{ parent.lastName }} #}
+
+                {#                    {% endfor %} #}
+                {#                {% endfor %} #}
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}
