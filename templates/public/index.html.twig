@@ -1,0 +1,42 @@
+{% extends 'public/_base.html.twig' %}
+
+{% block content %}
+    <div class="card bg-base-100 shadow-lg my-4">
+
+        <div class="card-body">
+            Bienvenue sur notre plateforme de prise de rendez-vous en ligne pour les parents et les enseignants.
+            <br>
+            <br>
+            Sélectionnez la date et l'heure qui vous conviennent le mieux pour discuter des progrès de votre enfant,
+            poser des questions ou aborder toute autre préoccupation.
+            <br>
+            Nous nous engageons à collaborer étroitement avec
+            vous pour assurer la réussite de votre enfant.
+            <br><br>
+            Nous avons hâte de vous rencontrer !
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr my-7">
+        {% for teacher in teachers %}
+            <div class="min-h-full">
+                <div class="card card-compact bg-base-100 shadow-lg my-4 ">
+
+                    <div class="card-body text-primary">
+                        <h2 class="card-title ">{{ teacher.firstName }} {{ teacher.lastName }}</h2>
+
+                        <div class="text-gray-600 text-sm">
+                            {{ teacher.grade }}
+                        </div>
+
+                        <div class="card-actions justify-center mt-4">
+                            <a href="{{ path('appointments_by_teacher', {id_teacher: teacher.id}) }}" class="btn btn-secondary btn-sm">Prendre rendez-vous</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

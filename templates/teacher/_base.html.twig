@@ -6,23 +6,41 @@
     {% endif %}
 
     <div class="container prose">
-        <div class="text-center mb-8">
 
-            <a href="{{ path('teacher_dashboard') }}" class="avatar">
-                <div class="mask mask-hexagon w-36">
-                    <img src="{{ asset(app.user.avatar) }}" class="not-prose"/>
-                </div>
+        <div class="card bg-base-100 shadow-lg my-4">
+            <a href="{{ path('home') }}" class="not-prose">
+                <figure>
+                    <img src="{{ asset('images/illustation.jpeg') }}"
+                         alt="Illustration" class="max-h-[200px] object-cover w-full"/>
+                </figure>
             </a>
+            <div class="card-body items-center text-center">
+                <h2 class="card-title my-0">
+                    Bonjour {{ app.user.firstName }} {{ app.user.lastName }} !
+                </h2>
 
-            <h1 class="font-bold text-3xl">
-                Bonjour {{ app.user.firstName }} {{ app.user.lastName }} !
-            </h1>
+            </div>
         </div>
 
+        {% for label, messages in app.flashes(['success', 'error']) %}
+            {% for message in messages %}
+                <div role="alert" class="alert alert-{{ label }} my-4">
+
+                    {% if label is same as 'success' %}
+                        <i class="lni lni-checkmark-circle font-bold text-xl"></i>
+                    {% else %}
+                        <i class="lni lni-cross-circle font-bold text-xl"></i>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
+
+
+            {% endfor %}
+        {% endfor %}
 
         <h2 class="text-2xl">
-            <a href="{{ path('teacher_dashboard') }}">
-                <-
+            <a href="{{ path('teacher_dashboard') }}" class="btn btn-primary btn-sm">
+                <i class="lni lni-arrow-left"></i>
             </a>
 
             {% block page_title %}

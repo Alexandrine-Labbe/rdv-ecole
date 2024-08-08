@@ -1,24 +1,48 @@
 {% use 'tailwind_2_layout.html.twig' %}
 
+{%- block form_row -%}
+    {%- set row_attr = row_attr|merge({ class: row_attr.class|default(row_class|default('mb-4 flex flex-col')) }) -%}
+    {{- parent() -}}
+{%- endblock form_row -%}
+
+{%- block form_label -%}
+    {%- set label_attr = label_attr|merge({ class: label_attr.class|default(label_class|default('block text-gray-800')) }) -%}
+    {{- parent() -}}
+{%- endblock form_label -%}
+
+{%- block checkbox_widget -%}
+    {%- set widget_class = widget_class|default('checkbox me-4') -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}
+
+{%- block submit_widget -%}
+    {% set btn_class = "btn-primary px-8" %}
+    {{- parent() -}}
+{%- endblock submit_widget -%}
+
 {%- block checkbox_row -%}
     {%- set row_attr = row_attr|merge({ class: row_attr.class|default(row_class|default('mb-6')) }) -%}
     {%- set widget_attr = {} -%}
     {%- if help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
     {%- endif -%}
-
-    <div class="form-control" {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
-        <label class="label cursor-pointer justify-start">
-            {{- form_widget(form, widget_attr) -}}
-            <span class="label-text">{{- form_label(form) -}}</span>
-        </label>
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
         {{- form_errors(form) -}}
+        <div class="flex">
+            {{- form_widget(form, widget_attr) -}}
+            {{- form_label(form) -}}
+        </div>
         {{- form_help(form) -}}
     </div>
-
 {%- endblock checkbox_row -%}
 
-{%- block checkbox_widget -%}
-    {%- set widget_class = widget_class|default('checkbox me-4') -%}
+{%- block button_attributes -%}
+    id="{{ id }}" name="{{ full_name }}"{% if disabled %} disabled="disabled"{% endif -%} class="btn {{ btn_class | default('btn-neutral') }}"
+    {{ block('attributes') }}
+{%- endblock button_attributes -%}
+
+{%- block widget_attributes -%}
+    {%- set attr = attr|merge({ class: attr.class|default(widget_class|default('grow input input-bordered')) ~ (disabled ? ' ' ~ widget_disabled_class|default('border-gray-300 text-gray-500')) ~ (errors|length ? ' ' ~ widget_errors_class|default('border-red-700')) }) -%}
     {{- parent() -}}
-{%- endblock checkbox_widget -%}
+{%- endblock widget_attributes -%}
+

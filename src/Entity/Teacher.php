@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TeacherRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -41,9 +42,6 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $grade = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $avatar = null;
 
     #[ORM\Column(options: ['default' => false])]
     private ?bool $is_available_for_appointment = false;
@@ -170,24 +168,12 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAvatar(): ?string
-    {
-        return $this->avatar;
-    }
-
-    public function setAvatar(?string $avatar): static
-    {
-        $this->avatar = $avatar;
-
-        return $this;
-    }
-
     public function isAvailableForAppointment(): ?bool
     {
         return $this->is_available_for_appointment;
     }
 
-    public function setAvailableForAppointment(bool $is_available_for_appointment): static
+    public function setIsAvailableForAppointment(bool $is_available_for_appointment): static
     {
         $this->is_available_for_appointment = $is_available_for_appointment;
 

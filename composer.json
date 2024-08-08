@@ -22,7 +22,9 @@
         "symfony/uid": "6.4.*",
         "symfony/validator": "6.4.*",
         "symfony/webpack-encore-bundle": "^2.1",
-        "symfony/yaml": "6.4.*"
+        "symfony/yaml": "6.4.*",
+        "twig/extra-bundle": "^3.11",
+        "twig/intl-extra": "^3.11"
     },
     "config": {
         "allow-plugins": {
