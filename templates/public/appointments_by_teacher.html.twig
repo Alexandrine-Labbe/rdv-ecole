@@ -6,22 +6,27 @@
         Rendez-vous avec {{ teacher.firstName }} {{ teacher.lastName }}
     </h1>
 
-    <div class="grid grid-cols-2 lg:grid-cols-2 gap-4 auto-rows-fr my-7">
-        {% for appointment in appointments %}
-            <div class="card bg-base-100 border {{ appointment.isAvailable ? '' :  'border-primary' }}  card-compact shadow-lg my-3">
-                <div class="card-body">
-                    <p>
-                        <span class="font-bold">Date : </span>{{ appointment.beginAt|date('d/m/Y') }} <br>
-                        <span class="font-bold">Heure : </span>{{ appointment.beginAt |date('H:i') }}
-                    </p>
+    {% for date, appointments in appointments_by_date %}
+        <h2>Rendez-vous du {{ date | format_datetime("medium", "none") }}</h2>
+        <div class="grid grid-cols-2 lg:grid-cols-2 gap-4 auto-rows-fr my-7">
+
+            {% for appointment in appointments %}
+                <div class="card bg-base-100 border {{ appointment.isAvailable ? '' :  'border-primary' }}  card-compact shadow-lg">
+                    <div class="card-body">
+                        <p>
+                            <span class="font-bold">Date : </span>{{ appointment.beginAt|date('d/m/Y') }} <br>
+                            <span class="font-bold">Heure : </span>{{ appointment.beginAt |date('H:i') }}
+                        </p>
 
 
-                    <div class="card-actions justify-center">
-                        <a href="" class="btn btn-outline btn-sm btn-primary">Choisir ce créneau</a>
+                        <div class="card-actions justify-center">
+                            <a href="" class="btn btn-outline btn-sm btn-primary">Choisir ce créneau</a>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
-        {% endfor %}
-    </div>
+            {% endfor %}
+        </div>
+
+    {% endfor %}
 {% endblock %}

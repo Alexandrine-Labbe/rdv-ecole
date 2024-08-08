@@ -29,10 +29,15 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('home');
         }
         $appointments_available = $this->appointmentRepository->findBy(['teacher' => $id_teacher, 'child' => null], ['begin_at' => 'ASC']);
+        $appointments_by_date = [];
+        foreach ($appointments_available as $appointment) {
+            $date = $appointment->getBeginAt()->format('Y-m-d');
+            $appointments_by_date[$date][] = $appointment;
+        }
 
         return $this->render('public/appointments_by_teacher.html.twig', [
             'teacher' => $teacher,
-            'appointments' => $appointments_available,
+            'appointments_by_date' => $appointments_by_date,
         ]);
     }
 
@@ -62,11 +67,6 @@ class AppointmentController extends AbstractController
             $this->addFlash('error', 'Ce rendez-vous n\'existe pas.');
             return $this->redirectToRoute('home');
         }
-
-        foreach ($appointment->getGuardians() as $guardian) {
-            dump($guardian);
-        }
-        dd($appointment->getGuardians(), $appointment->getId()->toRfc4122());
 
         $this->entityManager->flush();
 
