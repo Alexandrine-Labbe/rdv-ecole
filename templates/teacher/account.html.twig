@@ -1,10 +1,12 @@
 {% extends 'teacher/_base.html.twig' %}
-{#{% form_theme form 'tailwind_2_layout.html.twig' %}#}
 
 {% block page_title %}
     Mon compte
 {% endblock %}
 
 {% block content %}
+    <a href="{{ path('teacher_account_password') }}" class="btn btn-accent btn-sm mb-6 px-6">Mettre à jour mon mot de passe</a>
+
     {{ form(form) }}
+
 {% endblock %}

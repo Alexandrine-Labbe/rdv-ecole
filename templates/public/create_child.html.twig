@@ -1,0 +1,17 @@
+{% extends 'public/_base.html.twig' %}
+
+{% block content %}
+
+    <h2 class="mt-8 mb-4">
+        <a href="{{ path('home') }}" class="btn btn-primary btn-sm">
+            <i class="lni lni-arrow-left"></i>
+        </a>
+        Rendez-vous avec {{ appointment.teacher.firstName }} {{ appointment.teacher.lastName }}
+    </h2>
+    <h3 class="text-gray-500 mt-0 mb-6">
+        {{ appointment.beginAt | format_datetime("none", "short") }} le {{ appointment.beginAt | format_datetime("medium", "none") }}
+    </h3>
+
+    {{ form(form) }}
+
+{% endblock %}

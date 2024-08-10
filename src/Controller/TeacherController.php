@@ -13,8 +13,11 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TeacherController extends AbstractController
 {
@@ -75,5 +78,52 @@ class TeacherController extends AbstractController
         return $this->render('teacher/account.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    #[Route('/teacher/account/password', name: 'teacher_account_password')]
+    #[isGranted('IS_AUTHENTICATED_FULLY')]
+    public function updatePassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+    {
+        $security = [
+            'password' => '',
+            'password_repeat' => '',
+        ];
+
+        $form = $this->createFormBuilder($security)
+            ->add('password', PasswordType::class, [
+                'label' => 'Nouveau mot de passe',
+            ])
+            ->add('password_repeat', PasswordType::class, [
+                'label' => 'Confirmer le mot de passe',
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Enregistrer',
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+        $security = $form->getData();
+
+        if ($security['password'] !== $security['password_repeat']) {
+            $form->addError(new FormError('Les mots de passe ne correspondent pas.'));
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $teacher = $this->getUser();
+
+            $hashed_password = $passwordHasher->hashPassword($this->getUser(), $security['password']);
+            $teacher->setPassword($hashed_password);
+            $entityManager->persist($teacher);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre mot de passe a été mis à jour.');
+
+            return $this->redirectToRoute('teacher_account_password');
+        }
+
+        return $this->render('teacher/account_password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+
     }
 }

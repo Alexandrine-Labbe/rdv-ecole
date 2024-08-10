@@ -20,9 +20,7 @@ class TeacherType extends AbstractType
         $builder->add('email', EmailType::class)
             ->add('firstname', TextType::class, ['label' => 'Prénom'])
             ->add('lastname', TextType::class, ['label' => 'Nom'])
-//            ->add('password', PasswordType::class, ['label' => 'Mot de passe', 'required' => false])
             ->add('grade', TextType::class, ['label' => 'Classe'])
-//            ->add('avatar', FileType::class, ['label' => 'Avatar personnalisé'])
             ->add('is_available_for_appointment', CheckboxType::class, [
                 'label' => 'Accepte les rendez-vous',
                 'help' => 'Si vous cochez cette case, les élèves pourront prendre rendez-vous avec vous.',

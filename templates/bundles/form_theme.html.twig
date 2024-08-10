@@ -46,3 +46,13 @@
     {{- parent() -}}
 {%- endblock widget_attributes -%}
 
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <ul class="marker:text-red-700">
+            {%- for error in errors -%}
+                <li class="{{ error_item_class|default('text-red-700') }}">{{ error.message }}</li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+{%- endblock form_errors -%}

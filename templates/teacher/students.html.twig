@@ -5,43 +5,43 @@
 {% endblock %}
 
 {% block content %}
-    {% for child in students %}
-        <div class="card bg-base-100 card-compact shadow-lg my-3">
-            <div class="card-body">
-                <h2 class="card-title">
-                    {{ child.lastName | upper }} {{ child.firstName }}
-                </h2>
+    <div class="grid grid-cols-2 lg:grid-cols-2 gap-4 auto-rows-fr my-7">
+        {% for child in students %}
+            <div class="card bg-base-100 shadow-lg my-3">
+                <div class="card-body">
+                    <h2 class="card-title mt-0">
+                        {{ child.lastName | upper }} {{ child.firstName }}
+                    </h2>
 
 
-                <div class="overflow-x-auto">
+                    <div class="overflow-x-auto">
 
+                        {% for appointment in child.appointments %}
 
-                    {% for appointment in child.appointments %}
-
-                        <div>
-                            Rendez-vous : {{ appointment.beginAt |date('H:i') }} le {{ appointment.beginAt|date('d/m/Y') }}
-                        </div>
-
-                        {% for parent in appointment.guardians %}
                             <div>
-                                Parent : {{ parent.firstName }} {{ parent.lastName }}
+                                Rendez-vous à {{ appointment.beginAt |date('H:i') }}
+                                le {{ appointment.beginAt | format_datetime("medium", "none") }}
                             </div>
+
+                            <div class="mt-2">
+                                {% if appointment.guardians is not empty %}
+                                    Parent(s) présent :
+
+                                    <ul class="my-0">
+                                        {% for parent in appointment.guardians %}
+                                            <li>{{ parent.firstName }} {{ parent.lastName }}</li>
+                                        {% endfor %}
+                                    </ul>
+
+                                {% endif %}
+                            </div>
+
                         {% endfor %}
-                    {% endfor %}
+
+                    </div>
 
                 </div>
-
-
-                {#                {% for appointment in child.appointments %} #}
-                {#                    Rendez-vous : {{ appointment.beginAt |date('H:i') }} le {{ appointment.beginAt|date('d/m/Y') }} #}
-
-                {#                    {% for parent in appointment.guardians %} #}
-
-                {#                        Parent : {{ parent.firstName }} {{ parent.lastName }} #}
-
-                {#                    {% endfor %} #}
-                {#                {% endfor %} #}
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 {% endblock %}
