@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Appointment;
 use App\Form\Type\TeacherType;
 use App\Repository\AppointmentRepository;
 use App\Repository\ChildRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -125,5 +128,101 @@ class TeacherController extends AbstractController
             'form' => $form->createView(),
         ]);
 
+    }
+
+    #[Route('/teacher/appointments/create', name: 'teacher_appointments_create')]
+    public function createAppointments(Request $request, EntityManagerInterface $entityManager)
+    {
+        $availability = [
+            'date_begin' => new \DateTimeImmutable('now'),
+            'date_end' => new \DateTimeImmutable('now'),
+            'duration' => null,
+        ];
+
+        $form_multiple = $this->createFormBuilder($availability)
+            ->add('date_begin', DateTimeType::class, [
+                'label' => 'Date de début',
+                'input' => 'datetime_immutable',
+            ])
+            ->add('date_end', DateTimeType::class, [
+                'label' => 'Date de fin',
+                'input' => 'datetime_immutable',
+            ])
+            ->add('duration', ChoiceType::class, [
+                'label' => 'Durée du rendez-vous',
+                'choices' => [
+                    '15 minutes' => 15,
+                    '20 minutes' => 20,
+                    '30 minutes' => 30,
+                    '45 minutes' => 45,
+                    '60 minutes' => 60  ,
+                ]
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Enregistrer',
+            ])
+            ->getForm();
+
+        $form_multiple->handleRequest($request);
+        $availability = $form_multiple->getData();
+
+        if ($availability['date_begin'] > $availability['date_end']) {
+            $form_multiple->addError(new FormError('La date de début doit être inférieur à la date de fin.'));
+        }
+
+        if ($form_multiple->isSubmitted() && $form_multiple->isValid()) {
+            $duration = new \DateInterval("PT$availability[duration]M");
+
+            while ($availability['date_begin'] < $availability['date_end']) {
+                $appointment_entity = new Appointment();
+                $appointment_entity->setBeginAt($availability['date_begin']);
+                $appointment_entity->setTeacher($this->getUser());
+                $entityManager->persist($appointment_entity);
+
+                $availability['date_begin'] = $availability['date_begin']->add($duration);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vous avez bien créé des rendez-vous.');
+
+            return $this->redirectToRoute('teacher_appointments');
+        }
+
+
+        $appointment = [
+            'date_begin' => new \DateTimeImmutable('now'),
+        ];
+
+        $form_one = $this->createFormBuilder($appointment)
+            ->add('date_begin', DateTimeType::class, [
+                'label' => 'Date de début',
+                'input' => 'datetime_immutable',
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Enregistrer',
+            ])
+            ->getForm();
+
+        $form_one->handleRequest($request);
+        $appointment = $form_multiple->getData();
+
+        if ($form_one->isSubmitted() && $form_one->isValid()) {
+            $appointment_entity = new Appointment();
+            $appointment_entity->setBeginAt($appointment['date_begin']);
+            $appointment_entity->setTeacher($this->getUser());
+            $entityManager->persist($appointment_entity);
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vous avez bien créé le rendez-vous.');
+
+            return $this->redirectToRoute('teacher_appointments');
+        }
+
+        return $this->render('teacher/appointments_form.html.twig', [
+            'form_multiple' => $form_multiple->createView(),
+            'form_one' => $form_one->createView(),
+        ]);
     }
 }

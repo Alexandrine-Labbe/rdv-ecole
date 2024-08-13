@@ -22,15 +22,22 @@
             </div>
         </div>
 
-        {% for label, messages in app.flashes(['success', 'error']) %}
+        {% for messages in app.flashes(['error']) %}
             {% for message in messages %}
-                <div role="alert" class="alert alert-{{ label }} my-4">
+                <div role="alert" class="alert alert-error my-4">
+                    <i class="lni lni-cross-circle font-bold text-xl"></i>
+                    <span>{{ message }}</span>
+                </div>
 
-                    {% if label is same as 'success' %}
-                        <i class="lni lni-checkmark-circle font-bold text-xl"></i>
-                    {% else %}
-                        <i class="lni lni-cross-circle font-bold text-xl"></i>
-                    {% endif %}
+
+            {% endfor %}
+        {% endfor %}
+
+
+        {% for messages in app.flashes(['success']) %}
+            {% for message in messages %}
+                <div role="alert" class="alert alert-success my-4">
+                    <i class="lni lni-checkmark-circle font-bold text-xl"></i>
                     <span>{{ message }}</span>
                 </div>
 

@@ -1,0 +1,30 @@
+{% extends 'teacher/_base.html.twig' %}
+
+{% block page_title %}
+    Mon compte
+{% endblock %}
+
+{% block content %}
+
+    <h2>
+        Créer plusieurs rendez-vous
+    </h2>
+
+    <div class="card bg-base-100 border shadow-lg my-3">
+        <div class="card-body">
+            {{ form(form_multiple) }}
+        </div>
+    </div>
+
+
+    <h2 class="mt-12">
+        Créer un seul rendez-vous
+    </h2>
+
+    <div class="card bg-base-100 border shadow-lg my-3">
+        <div class="card-body">
+            {{ form(form_one) }}
+        </div>
+    </div>
+
+{% endblock %}

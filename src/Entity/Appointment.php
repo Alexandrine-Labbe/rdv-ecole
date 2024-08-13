@@ -44,6 +44,8 @@ class Appointment
     public function __construct()
     {
         $this->guardians = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable('now');
+        $this->updated_at = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?Uuid
