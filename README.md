@@ -1,5 +1,15 @@
 # Rendez-vous école
 
+Application de prise de rendez-vous entre les parents et les enseignants.
+
+## Prérequis
+- PHP 8.3
+- Composer
+- Node.js 20.15
+- PostgreSQL
+
+## Installation
+
 ````shell
 composer install
 ````
