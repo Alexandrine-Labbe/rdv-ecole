@@ -30,16 +30,9 @@ class Child
     #[ORM\OneToMany(targetEntity: Appointment::class, mappedBy: 'child')]
     private Collection $appointments;
 
-    /**
-     * @var Collection<int, Guardian>
-     */
-    #[ORM\ManyToMany(targetEntity: Guardian::class, mappedBy: 'child')]
-    private Collection $guardians;
-
     public function __construct()
     {
         $this->appointments = new ArrayCollection();
-        $this->guardians = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -96,33 +89,6 @@ class Child
             if ($appointment->getChild() === $this) {
                 $appointment->setChild(null);
             }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Guardian>
-     */
-    public function getGuardians(): Collection
-    {
-        return $this->guardians;
-    }
-
-    public function addGuardian(Guardian $guardian): static
-    {
-        if (!$this->guardians->contains($guardian)) {
-            $this->guardians->add($guardian);
-            $guardian->addChild($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGuardian(Guardian $guardian): static
-    {
-        if ($this->guardians->removeElement($guardian)) {
-            $guardian->removeChild($this);
         }
 
         return $this;

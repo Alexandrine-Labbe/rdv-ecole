@@ -32,12 +32,6 @@ class Guardian
     private ?string $email = null;
 
     /**
-     * @var Collection<int, Child>
-     */
-    #[ORM\ManyToMany(targetEntity: Child::class, inversedBy: 'guardians')]
-    private Collection $child;
-
-    /**
      * @var Collection<int, Appointment>
      */
     #[ORM\ManyToMany(targetEntity: Appointment::class, mappedBy: 'guardians')]
@@ -45,7 +39,6 @@ class Guardian
 
     public function __construct()
     {
-        $this->child = new ArrayCollection();
         $this->appointments = new ArrayCollection();
     }
 
@@ -86,30 +79,6 @@ class Guardian
     public function setEmail(?string $email): static
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Child>
-     */
-    public function getChild(): Collection
-    {
-        return $this->child;
-    }
-
-    public function addChild(Child $child): static
-    {
-        if (!$this->child->contains($child)) {
-            $this->child->add($child);
-        }
-
-        return $this;
-    }
-
-    public function removeChild(Child $child): static
-    {
-        $this->child->removeElement($child);
 
         return $this;
     }

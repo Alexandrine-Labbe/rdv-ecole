@@ -2,6 +2,8 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Child;
+use App\Entity\Guardian;
 use App\Repository\AppointmentRepository;
 use App\Repository\ChildRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -12,7 +14,7 @@ class AppointmentTakenFixtures extends Fixture implements DependentFixtureInterf
 {
     public function __construct(
         private AppointmentRepository $appointmentRepository,
-        private ChildRepository $childRepository
+        private ChildRepository       $childRepository
     )
     {
     }
@@ -21,7 +23,7 @@ class AppointmentTakenFixtures extends Fixture implements DependentFixtureInterf
     {
         return [
             AppointmentFixtures::class,
-            FamilyFixtures::class,
+            ChildrenFixtures::class,
         ];
     }
 
@@ -33,13 +35,59 @@ class AppointmentTakenFixtures extends Fixture implements DependentFixtureInterf
         foreach ($children as $child) {
             $appointment = $appointments[array_rand($appointments)];
             $appointment->setChild($child);
-            $parents = $child->getGuardians();
+            $parents = $this->createGuardians($child);
             foreach ($parents as $parent) {
+                $manager->persist($parent);
                 $appointment->addGuardian($parent);
             }
             $manager->persist($appointment);
         }
 
         $manager->flush();
+    }
+
+    private function createGuardians(Child $child): array
+    {
+        $guardian1 = new Guardian();
+        $first_name = $this->getRandomFirstName();
+        $guardian1
+            ->setFirstName($first_name)
+            ->setLastName($child->getLastName())
+            ->setEmail($first_name . '.' . $child->getLastName() . '@example.com');
+
+        if (rand(0, 1)) {
+            $guardian2 = new Guardian();
+            $first_name = $this->getRandomFirstName();
+            $guardian2
+                ->setFirstName($first_name)
+                ->setLastName($child->getLastName())
+                ->setEmail($first_name . '.' . $child->getLastName() . '@example.com');
+            return [$guardian1, $guardian2];
+        }
+
+        return [$guardian1];
+    }
+
+    private function getRandomFirstName()
+    {
+        $names = [
+            'Alice',
+            'Ben',
+            'Chris',
+            'Diana',
+            'Ethan',
+            'Fiona',
+            'George',
+            'Hannah',
+            'Ian',
+            'Jasmine',
+            'Kevin',
+            'Lily',
+            'Michael',
+            'Nina',
+            'Oliver',
+        ];
+
+        return $names[array_rand($names)];
     }
 }

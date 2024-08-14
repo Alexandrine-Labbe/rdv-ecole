@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Child;
+use App\Entity\Guardian;
 use App\Repository\AppointmentRepository;
+use App\Repository\GuardianRepository;
 use App\Repository\TeacherRepository;
+use App\Service\MailerService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +24,9 @@ class AppointmentController extends AbstractController
     public function __construct(
         private TeacherRepository $teacherRepository,
         private AppointmentRepository $appointmentRepository,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private MailerService $mailerService,
+        private GuardianRepository $guardianRepository
     )
     {
     }
@@ -81,12 +86,12 @@ class AppointmentController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Le rendez-vous a bien été annulé.');
-        return $this->redirectToRoute('child_appointments');
+        return $this->redirectToRoute('teacher_appointments');
 
     }
 
     #[Route('/appointments/take/{id_appointment}', name: 'take_appointment')]
-    public function takeAppointment(string $id_appointment, Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    public function takeAppointment(string $id_appointment, Request $request): RedirectResponse|Response
     {
         $appointment = $this->appointmentRepository->findOneBy(['id' => $id_appointment]);
         if (!$appointment || $appointment->getChild()) {
@@ -98,38 +103,61 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        $child = new Child();
-        $form = $this->createFormBuilder($child)
-            ->add('firstname', TextType::class, ['label' => 'Prénom de l\'enfant'])
-            ->add('lastname', TextType::class, ['label' => 'Nom de l\'enfant'])
-            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $request->request->all();
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $child = $form->getData();
-
+        if (isset($form['form_submit'])) {
+            $child = new Child();
+            $child->setFirstName($form['child']['first_name']);
+            $child->setLastName($form['child']['last_name']);
             $appointment->setChild($child);
             $appointment->setUpdatedAt(new DateTimeImmutable('now'));
+            $this->entityManager->persist($child);
 
-            $entityManager->persist($child);
-            $entityManager->flush();
+            foreach ($form['guardians'] as $guardian) {
+                if (empty($guardian['first_name']) || empty($guardian['last_name'])) {
+                   continue;
+                }
 
-            $this->addFlash('success', 'Votre rendez-vous a été validé.');
+                $guardian_entity = $this->guardianRepository->findOneBy(['email' => $guardian['email']]);
+                if (!$guardian_entity) {
+                    $guardian_entity = new Guardian();
+                    $guardian_entity->setFirstName($guardian['first_name']);
+                    $guardian_entity->setLastName($guardian['last_name']);
+                    $guardian_entity->setEmail($guardian['email']);
+                }
 
-            return $this->redirectToRoute('create_appointment_guardian', ['id_appointment' => $appointment->getId()]);
+                $appointment->addGuardian($guardian_entity);
+                $this->entityManager->persist($guardian_entity);
+
+                if ($guardian['email']) {
+                    $this->mailerService->sendMail(
+                        $guardian['email'],
+                        'Rendez-vous pris',
+                        $this->renderView('email/appointment_validation.html.twig', [
+                            'appointment' => $appointment,
+                        ])
+                    );
+                }
+            }
+
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('appointment_success', ['id_appointment' => $appointment->getId()]);
         }
 
         return $this->render('public/create_child.html.twig', [
-            'form' => $form,
             'appointment' => $appointment,
         ]);
     }
 
-    #[Route('/appointments/guardian/{id_appointment}', name: 'create_appointment_guardian')]
-    public function createAppointmentGuardian(string $id_appointment)
+    #[Route('/appointments/success/{id_appointment}', name: 'appointment_success')]
+    public function appointmentSuccess(string $id_appointment): Response
     {
+        $appointment = $this->appointmentRepository->find(['id' => $id_appointment]);
 
-        return $this->render('public/create_guardian.html.twig');
+        return $this->render('public/appointment_success.html.twig', [
+            'appointment' => $appointment,
+        ]);
     }
+
 }

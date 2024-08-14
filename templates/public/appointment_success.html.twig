@@ -1,0 +1,13 @@
+{% extends 'public/_base.html.twig' %}
+
+{% block content %}
+
+    <h1>Félicitations</h1>
+
+    <p>
+        Le rendez-vous du {{ appointment.beginAt | format_datetime("medium", "none") }} à {{ appointment.beginAt | date('H:i') }} a bien été enregistré.
+        <br>
+        Vous recevrez très bientôt un email de confirmation.
+    </p>
+
+{% endblock %}

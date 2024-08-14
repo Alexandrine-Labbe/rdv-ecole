@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240808140428 extends AbstractMigration
+final class Version20240814133457 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,17 +29,12 @@ final class Version20240808140428 extends AbstractMigration
         $this->addSql('CREATE TABLE child (id UUID NOT NULL, first_name VARCHAR(255) NOT NULL, last_name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE guardian (id UUID NOT NULL, first_name VARCHAR(255) DEFAULT NULL, last_name VARCHAR(255) DEFAULT NULL, email VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_64486055E7927C74 ON guardian (email)');
-        $this->addSql('CREATE TABLE guardian_child (guardian_id UUID NOT NULL, child_id UUID NOT NULL, PRIMARY KEY(guardian_id, child_id))');
-        $this->addSql('CREATE INDEX IDX_7C84459211CC8B0A ON guardian_child (guardian_id)');
-        $this->addSql('CREATE INDEX IDX_7C844592DD62C21B ON guardian_child (child_id)');
-        $this->addSql('CREATE TABLE teacher (id UUID NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, first_name VARCHAR(255) NOT NULL, last_name VARCHAR(255) NOT NULL, grade VARCHAR(255) NOT NULL, is_available_for_appointment BOOLEAN DEFAULT false NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE teacher (id UUID NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) DEFAULT NULL, first_name VARCHAR(255) NOT NULL, last_name VARCHAR(255) NOT NULL, grade VARCHAR(255) NOT NULL, is_available_for_appointment BOOLEAN DEFAULT false NOT NULL, password_need_reset BOOLEAN DEFAULT false NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL ON teacher (email)');
         $this->addSql('ALTER TABLE appointment ADD CONSTRAINT FK_FE38F84441807E1D FOREIGN KEY (teacher_id) REFERENCES teacher (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE appointment ADD CONSTRAINT FK_FE38F844DD62C21B FOREIGN KEY (child_id) REFERENCES child (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE appointment_guardian ADD CONSTRAINT FK_516CEB9DE5B533F9 FOREIGN KEY (appointment_id) REFERENCES appointment (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE appointment_guardian ADD CONSTRAINT FK_516CEB9D11CC8B0A FOREIGN KEY (guardian_id) REFERENCES guardian (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE guardian_child ADD CONSTRAINT FK_7C84459211CC8B0A FOREIGN KEY (guardian_id) REFERENCES guardian (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE guardian_child ADD CONSTRAINT FK_7C844592DD62C21B FOREIGN KEY (child_id) REFERENCES child (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void
@@ -50,13 +45,10 @@ final class Version20240808140428 extends AbstractMigration
         $this->addSql('ALTER TABLE appointment DROP CONSTRAINT FK_FE38F844DD62C21B');
         $this->addSql('ALTER TABLE appointment_guardian DROP CONSTRAINT FK_516CEB9DE5B533F9');
         $this->addSql('ALTER TABLE appointment_guardian DROP CONSTRAINT FK_516CEB9D11CC8B0A');
-        $this->addSql('ALTER TABLE guardian_child DROP CONSTRAINT FK_7C84459211CC8B0A');
-        $this->addSql('ALTER TABLE guardian_child DROP CONSTRAINT FK_7C844592DD62C21B');
         $this->addSql('DROP TABLE appointment');
         $this->addSql('DROP TABLE appointment_guardian');
         $this->addSql('DROP TABLE child');
         $this->addSql('DROP TABLE guardian');
-        $this->addSql('DROP TABLE guardian_child');
         $this->addSql('DROP TABLE teacher');
     }
 }

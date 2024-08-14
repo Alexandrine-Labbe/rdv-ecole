@@ -9,9 +9,92 @@
         Rendez-vous avec {{ appointment.teacher.firstName }} {{ appointment.teacher.lastName }}
     </h2>
     <h3 class="text-gray-500 mt-0 mb-6">
-        {{ appointment.beginAt | format_datetime("none", "short") }} le {{ appointment.beginAt | format_datetime("medium", "none") }}
+        {{ appointment.beginAt | format_datetime("none", "short") }}
+        le {{ appointment.beginAt | format_datetime("medium", "none") }}
     </h3>
 
-    {{ form(form) }}
+    <form action="{{ path('take_appointment', {id_appointment: appointment.id}) }}" method="POST">
+
+        <h2>Enfant</h2>
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="first_name_child">Prénom</label>
+            <input type="text" id="first_name_child"
+                   name="child[first_name]"
+                   required="required"
+                   class="grow input input-bordered"
+                  >
+        </div>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="last_name_child">Nom</label>
+            <input type="text" id="last_name_child"
+                   name="child[last_name]"
+                   required="required"
+                   class="grow input input-bordered"
+                  >
+        </div>
+
+        <h2>Parent 1</h2>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="first_name_guardian1">Prénom</label>
+            <input type="text" id="first_name_guardian1"
+                   name="guardians[1][first_name]"
+                   required="required"
+                   class="grow input input-bordered"
+                  >
+        </div>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="last_name_guardian1">Nom</label>
+            <input type="text" id="last_name_guardian1"
+                   name="guardians[1][last_name]"
+                   required="required"
+                   class="grow input input-bordered"
+                  >
+        </div>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="email_guardian1">Email</label>
+            <input type="email" id="email_guardian1"
+                   name="guardians[1][email]"
+                   required="required"
+                   class="grow input input-bordered"
+                  >
+        </div>
+
+        <h2>Parent 2 (optionnel)</h2>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="first_name_guardian2">Prénom</label>
+            <input type="text" id="first_name_guardian2"
+                   name="guardians[][first_name]"
+                   class="grow input input-bordered"
+            >
+        </div>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="last_name_guardian2">Nom</label>
+            <input type="text" id="last_name_guardian2"
+                   name="guardians[2][last_name]"
+                   class="grow input input-bordered"
+            >
+        </div>
+
+        <div class="mb-4 flex flex-col">
+            <label class="block text-gray-800 required" for="email_guardian2">Email</label>
+            <input type="email" id="email_guardian2"
+                   name="guardians[2][email]"
+                   class="grow input input-bordered"
+            >
+        </div>
+
+
+
+        <input type="hidden" name="form_submit" value="1">
+
+       <button type="submit" class="btn btn-primary px-8 mt-8">Valider le rendez-vous</button>
+
+    </form>
 
 {% endblock %}
