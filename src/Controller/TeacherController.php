@@ -6,18 +6,17 @@ use App\Entity\Appointment;
 use App\Form\Type\TeacherType;
 use App\Repository\AppointmentRepository;
 use App\Repository\ChildRepository;
+use DateInterval;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -25,18 +24,27 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class TeacherController extends AbstractController
 {
 
+
+    public function __construct(
+        private readonly EntityManagerInterface      $entityManager,
+        private readonly AppointmentRepository       $appointmentRepository,
+        private readonly ChildRepository             $childRepository,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+    )
+    {
+    }
+
     #[Route('/teacher/dashboard', name: 'teacher_dashboard')]
-    public function dashboard()
+    public function dashboard(): Response
     {
 
-        return $this->render('teacher/dashboard.html.twig', [
-        ]);
+        return $this->render('teacher/dashboard.html.twig');
     }
 
     #[Route('/teacher/appointments', name: 'teacher_appointments')]
-    public function appointments(AppointmentRepository $appointmentRepository)
+    public function appointments(): Response
     {
-        $appointments = $appointmentRepository->findBy(['teacher' => $this->getUser()], ['begin_at' => 'ASC']);
+        $appointments = $this->appointmentRepository->findBy(['teacher' => $this->getUser()], ['begin_at' => 'ASC']);
 
         $appointments_by_date = [];
         foreach ($appointments as $appointment) {
@@ -50,9 +58,9 @@ class TeacherController extends AbstractController
     }
 
     #[Route('/teacher/students', name: 'teacher_students')]
-    public function students(ChildRepository $childRepository)
+    public function students(): Response
     {
-        $students = $childRepository->findByTeacher($this->getUser()->getId());
+        $students = $this->childRepository->findByTeacher($this->getUser()->getId());
 
         return $this->render('teacher/students.html.twig', [
             'students' => $students,
@@ -60,7 +68,7 @@ class TeacherController extends AbstractController
     }
 
     #[Route('/teacher/account', name: 'teacher_account')]
-    public function account(Request $request, EntityManagerInterface $entityManager)
+    public function account(Request $request): Response
     {
         $teacher = $this->getUser();
 
@@ -70,8 +78,8 @@ class TeacherController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $teacher = $form->getData();
 
-            $entityManager->persist($teacher);
-            $entityManager->flush();
+            $this->entityManager->persist($teacher);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été mises à jour.');
 
@@ -85,7 +93,7 @@ class TeacherController extends AbstractController
 
     #[Route('/teacher/account/password', name: 'teacher_account_password')]
     #[isGranted('IS_AUTHENTICATED_FULLY')]
-    public function updatePassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+    public function updatePassword(Request $request): Response
     {
         $security = [
             'password' => '',
@@ -114,10 +122,10 @@ class TeacherController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $teacher = $this->getUser();
 
-            $hashed_password = $passwordHasher->hashPassword($this->getUser(), $security['password']);
+            $hashed_password = $this->passwordHasher->hashPassword($this->getUser(), $security['password']);
             $teacher->setPassword($hashed_password);
-            $entityManager->persist($teacher);
-            $entityManager->flush();
+            $this->entityManager->persist($teacher);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour.');
 
@@ -131,11 +139,11 @@ class TeacherController extends AbstractController
     }
 
     #[Route('/teacher/appointments/create', name: 'teacher_appointments_create')]
-    public function createAppointments(Request $request, EntityManagerInterface $entityManager)
+    public function createAppointments(Request $request): Response
     {
         $availability = [
-            'date_begin' => new \DateTimeImmutable('now'),
-            'date_end' => new \DateTimeImmutable('now'),
+            'date_begin' => new DateTimeImmutable('now'),
+            'date_end' => new DateTimeImmutable('now'),
             'duration' => null,
         ];
 
@@ -155,7 +163,7 @@ class TeacherController extends AbstractController
                     '20 minutes' => 20,
                     '30 minutes' => 30,
                     '45 minutes' => 45,
-                    '60 minutes' => 60  ,
+                    '60 minutes' => 60,
                 ]
             ])
             ->add('submit', SubmitType::class, [
@@ -171,31 +179,17 @@ class TeacherController extends AbstractController
         }
 
         if ($form_multiple->isSubmitted() && $form_multiple->isValid()) {
-            $duration = new \DateInterval("PT$availability[duration]M");
-
-            while ($availability['date_begin'] < $availability['date_end']) {
-                $appointment_entity = new Appointment();
-                $appointment_entity->setBeginAt($availability['date_begin']);
-                $appointment_entity->setTeacher($this->getUser());
-                $entityManager->persist($appointment_entity);
-
-                $availability['date_begin'] = $availability['date_begin']->add($duration);
-            }
-
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Vous avez bien créé des rendez-vous.');
+            $this->handleMultipleForm($availability);
 
             return $this->redirectToRoute('teacher_appointments');
         }
 
 
-        $appointment = [
-            'date_begin' => new \DateTimeImmutable('now'),
-        ];
+        $appointment = new Appointment();
+        $appointment->setBeginAt(new DateTimeImmutable('now'));
 
         $form_one = $this->createFormBuilder($appointment)
-            ->add('date_begin', DateTimeType::class, [
+            ->add('begin_at', DateTimeType::class, [
                 'label' => 'Date de début',
                 'input' => 'datetime_immutable',
             ])
@@ -205,17 +199,10 @@ class TeacherController extends AbstractController
             ->getForm();
 
         $form_one->handleRequest($request);
-        $appointment = $form_multiple->getData();
+        $appointment = $form_one->getData();
 
         if ($form_one->isSubmitted() && $form_one->isValid()) {
-            $appointment_entity = new Appointment();
-            $appointment_entity->setBeginAt($appointment['date_begin']);
-            $appointment_entity->setTeacher($this->getUser());
-            $entityManager->persist($appointment_entity);
-
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Vous avez bien créé le rendez-vous.');
+            $this->handleFormSingle($appointment);
 
             return $this->redirectToRoute('teacher_appointments');
         }
@@ -224,5 +211,34 @@ class TeacherController extends AbstractController
             'form_multiple' => $form_multiple->createView(),
             'form_one' => $form_one->createView(),
         ]);
+    }
+
+    private function handleMultipleForm(array $availability): void
+    {
+        $duration = new DateInterval("PT$availability[duration]M");
+
+        while ($availability['date_begin'] < $availability['date_end']) {
+            $appointment_entity = new Appointment();
+            $appointment_entity->setBeginAt($availability['date_begin']);
+            $appointment_entity->setTeacher($this->getUser());
+            $this->entityManager->persist($appointment_entity);
+
+            $availability['date_begin'] = $availability['date_begin']->add($duration);
+        }
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vous avez bien créé des rendez-vous.');
+    }
+
+    private function handleFormSingle(Appointment $appointment): void
+    {
+        $appointment->setTeacher($this->getUser());
+        $this->entityManager->persist($appointment);
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vous avez bien créé le rendez-vous.');
+
     }
 }
