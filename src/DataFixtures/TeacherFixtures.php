@@ -23,6 +23,7 @@ class TeacherFixtures extends Fixture
                 "last_name" => "Pelletier",
                 "grade" => "CP",
                 "reference" => "teacher1",
+                "admin" => true,
             ],
             [
                 "first_name" => "Antoine",
@@ -89,6 +90,10 @@ class TeacherFixtures extends Fixture
                 ->setRoles(['ROLE_TEACHER', 'ROLE_USER'])
                 ->setGrade($teacher['grade'])
                 ->setIsAvailableForAppointment(rand(0, 1));
+
+            if (isset($teacher['admin'])) {
+                $teacherEntity->setRoles(['ROLE_TEACHER', 'ROLE_USER', 'ROLE_ADMIN']);
+            }
             $manager->persist($teacherEntity);
             $this->addReference($teacher['reference'], $teacherEntity);
         }

@@ -31,7 +31,7 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
@@ -51,6 +51,9 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Appointment::class, mappedBy: 'teacher', orphanRemoval: true)]
     private Collection $appointments;
+
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $password_need_reset = false;
 
     public function __construct()
     {
@@ -106,6 +109,11 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles());
     }
 
     /**
@@ -206,6 +214,18 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface
                 $appointment->setTeacher(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isPasswordNeedReset(): ?bool
+    {
+        return $this->password_need_reset;
+    }
+
+    public function setPasswordNeedReset(bool $password_need_reset): static
+    {
+        $this->password_need_reset = $password_need_reset;
 
         return $this;
     }

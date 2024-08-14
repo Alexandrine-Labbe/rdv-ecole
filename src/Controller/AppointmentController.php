@@ -38,6 +38,9 @@ class AppointmentController extends AbstractController
         $appointments_available = $this->appointmentRepository->findBy(['teacher' => $id_teacher, 'child' => null], ['begin_at' => 'ASC']);
         $appointments_by_date = [];
         foreach ($appointments_available as $appointment) {
+            if ($appointment->getBeginAt() < new DateTimeImmutable('now')) {
+                continue;
+            }
             $date = $appointment->getBeginAt()->format('Y-m-d');
             $appointments_by_date[$date][] = $appointment;
         }

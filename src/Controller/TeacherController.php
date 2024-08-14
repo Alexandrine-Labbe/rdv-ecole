@@ -23,8 +23,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TeacherController extends AbstractController
 {
-
-
     public function __construct(
         private readonly EntityManagerInterface      $entityManager,
         private readonly AppointmentRepository       $appointmentRepository,

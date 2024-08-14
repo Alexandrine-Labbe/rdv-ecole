@@ -1,0 +1,40 @@
+{% extends 'teacher/_base.html.twig' %}
+
+{% block page_title %}
+    Mon enseignants
+
+
+    <a href="{{ path('invite_teacher') }}" class="btn btn-secondary float-end">
+        Inviter un enseignant
+    </a>
+
+{% endblock %}
+
+{% block content %}
+    <div class="grid grid-cols-2 lg:grid-cols-2 gap-4 auto-rows-fr my-7">
+        {% for teacher in teachers %}
+            <div class="card bg-base-100 shadow-lg my-3">
+                <div class="card-body">
+                    <h2 class="card-title my-0">
+                        {{ teacher.lastName | upper }} {{ teacher.firstName }}
+                    </h2>
+
+                    <div>
+                        {{ teacher.grade }} <br>
+                        <a href="mailto:{{ teacher.email }}">{{ teacher.email }}</a>
+                    </div>
+
+                    <div class="card-actions justify-end">
+                        <a href="{{ path('delete_teacher', {id_teacher: teacher.id}) }}"
+                           class="btn btn-error {{ teacher.id is same as app.user.id ? 'btn-disabled' : '' }}"
+                           onclick="return confirm('Voulez-vous vraiment supprimer cet enseignant ?');"
+                        >Supprimer</a>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}
