@@ -11,46 +11,55 @@
 
 
 {% block content %}
-        {% for date, appointments in appointments_by_date %}
+    {% for date, appointments in appointments_by_date %}
 
-            <h2>Rendez-vous du {{ date | format_datetime("medium", "none") }}</h2>
+        <h2>Rendez-vous du {{ date | format_datetime("medium", "none") }}</h2>
 
-            <div class="grid grid-cols-2 lg:grid-cols-2 gap-4 auto-rows-fr my-7">
-            {% for appointment in appointments %}
-                <div class="card bg-base-100 border {{ appointment.isAvailable ? '' :  'border-primary' }} shadow-lg my-3">
-                    <div class="card-body">
-                        <div>
-                            <h2 class="card-title mt-0 mb-4">
-                                {{ appointment.beginAt | date('H:i') }}
-                            </h2>
 
+
+
+        <div class="overflow-x-auto">
+            <table class="table table-zebra not-prose">
+                <!-- head -->
+                <thead>
+                <tr class="text-lg">
+                    <th>Heure</th>
+                    <th>Enfant</th>
+                    <th>Parent(s)</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for appointment in appointments %}
+                    <tr>
+                        <th>{{ appointment.beginAt | date('H:i') }}</th>
+                        <td>
                             {% if appointment.isAvailable %}
-                                <p>
-                                    Créneau disponible
-                                </p>
+                                <div class="badge badge-primary">Libre</div>
                             {% else %}
-
-                                <p class="mb-0">
-                                    <span class="font-bold">Enfant : </span>{{ appointment.child.firstName }} {{ appointment.child.lastName }} <br>
-                                    <span class="font-bold">Parent(s) : </span>{{ appointment.guardians | map(g => g.firstName ~ ' ' ~ g.lastName) | join(', ') }}
-                                </p>
+                                {{ appointment.child.firstName }} {{ appointment.child.lastName }}
                             {% endif %}
-                        </div>
-
-
-
-                        <div class="card-actions justify-end mt-auto">
+                        </td>
+                        <td>{{ appointment.guardians | map(g => g.firstName ~ ' ' ~ g.lastName) | join(', ') }}</td>
+                        <td>
                             {% if appointment.isAvailable %}
-                                <a href="{{ path('delete_appointment', {id_appointment: appointment.id}) }}" class="btn btn-sm btn-neutral not-prose">Supprimer le créneau</a>
+                                <a href="{{ path('delete_appointment', {id_appointment: appointment.id}) }}"
+                                   class="btn btn-sm btn-error not-prose">Supprimer</a>
                             {% else %}
-                                <a href="{{ path('cancel_appointment', {id_appointment: appointment.id}) }}" class="btn btn-sm btn-primary not-prose">Annuler le rdv</a>
+                                <a href="{{ path('cancel_appointment', {id_appointment: appointment.id}) }}"
+                                   class="btn btn-sm btn-primary not-prose">Annuler</a>
                             {% endif %}
-                        </div>
+                        </td>
+                    </tr>
+                {% endfor %}
 
-                    </div>
-                </div>
-            {% endfor %}
-            </div>
+                </tbody>
+            </table>
+        </div>
 
-        {% endfor %}
+
+
+
+    {% endfor %}
 {% endblock %}
